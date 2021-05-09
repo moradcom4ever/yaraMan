@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
-
 import argparse
 from array import *
+import os
 import os.path
 import platform
 from datetime import date
@@ -21,30 +20,37 @@ if args.input_file is None and args.directory is None:
 if args.input_file and args.directory:
    ap.error("\n-----------------------------------------\nChoose Only one of \"-i\" or \"-d\" options\n-----------------------------------------\n")
 
-print("")
-print("---------------------------------------------------------")
-print("")
-print("IOC_YARA_CONVERTER \n")
-print("Mandiant IOCe to Yara rule converteer \n")
-print("Created by Morad Rawashdeh, May 2021, Version 1.0")
-print("")
-print("---------------------------------------------------------")
-print("")
+mk_dir = ""
+rule_name = ""
+rules_count = 0
+ioc_path = ""
+ioc_file = ""
+
+# Check system and determine path char / or \
+path_char = ""
+if platform.system() == "Windows":
+    path_char = "\\"
+elif platform.system() == "Linux":
+    path_char = "/"
+
+current_path = os.path.dirname(__file__)
+if args.directory:
+    if (args.directory[-1] == "\\" or args.directory[-1] == "/"):
+            args.directory = args.directory[:-1]
+    if not os.path.exists("{}{}Converted_Yara".format(args.directory,path_char)):
+        os.mkdir("{}{}Converted_Yara".format(args.directory,path_char))
+
 
 def run_script(file_name):
     ioc_file = file_name
     # check IOC file full path
     found = "false"
-    current_path = os.path.dirname(__file__)
     for letter in ioc_file:
-        if(letter == "\\" or letter == "/"):
+        if(letter == "\\" or letter == "/"): # if true, that means full directory is provided
             found = "true"
             break
-    if found == "false": # if not in full path, use thecurrent full path
-        if platform.system() == "Windows":
-            ioc_file = "{}\{}".format(current_path,ioc_file)
-        elif platform.system() == "Linux":
-            ioc_file = "{}/{}".format(current_path,ioc_file)
+    if found == "false": # if not in full path, use the current full path
+        ioc_file = "{}{}{}".format(current_path,path_char,ioc_file)
 
     # Check if IOC file is exist
     real = os.path.isfile(ioc_file)
@@ -52,7 +58,6 @@ def run_script(file_name):
         print("IOC file not exist")
         quit()
 
-    rule_name = ""
     desc = ""
     condition = ""
     operator_value = ""
@@ -120,7 +125,7 @@ def run_script(file_name):
 
     # Prepare Yara rule file
     ioc_path = os.path.dirname(ioc_file)
-    yara_file = "{}\{}.yar".format(ioc_path, rule_name)
+    yara_file = "{}{}Converted_Yara{}{}.yar".format(ioc_path, path_char , path_char, rule_name)
     f = open(yara_file,"w")
     f.write("import \"hash\"\n")
     f.write("rule " + rule_name + "{\n")
@@ -139,29 +144,41 @@ def run_script(file_name):
     f.write("}")
 
     print("")
-    print("List of Strings:\n")
-    print(strings_text)
+    print("IOC file name is :\t{}\n".format(ioc_file))
+    print("Rule name is :\t\t{}\n".format(rule_name))
     print("")
-    print("---------------------------------------------------------")
-    print("Condition string:\n")
-    print(condition)
-    print("")
-    print("---------------------------------------------------------")
-    print("Finished converting successfully")
-    print("File is created as {}".format(yara_file))
-    print("")
-
 
 if args.input_file: # if options -i is provided
+    rules_count = 1
     run_script(args.input_file)
 
 if args.directory: # if options -d is provided
     all_files = ""
     for f in listdir(args.directory):
        if isfile(join(args.directory, f)):
-           all_files += "{}\{}\n".format(args.directory,f)
+           all_files += "{}{}{}\n".format(args.directory,path_char,f)
     for l in all_files.splitlines(): 
+        # Check file extension
+        extension = l.split(".")[-1]
+        if extension != "ioc":
+            continue
         run_script(l)
-    
+        rules_count+=1
 
-
+# print output on console
+print("")
+print("---------------------------------------------------------")
+print("")
+print("IOC_YARA_CONVERTER \n")
+print("Mandiant IOCe to Yara rule converter \n")
+print("Created by Morad Rawashdeh, May 2021, Version 1.0")
+print("")
+print("---------------------------------------------------------")
+print("")
+print("Number of rules created: {}".format(rules_count))
+print("")
+print("---------------------------------------------------------")
+print("")
+print("Finished converting successfully")
+print("File/s can be found inside \"Converted_Yara\" directory")
+print("")
