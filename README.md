@@ -1,6 +1,6 @@
-# ioc_yara_converter
+# yarMan
 
-IOC_YARA_CONVERTER
+yarMan
 Mandiant IOCe to Yara rule converter
 Created by Morad Rawashdeh, May 2021, Version 1.0
 
