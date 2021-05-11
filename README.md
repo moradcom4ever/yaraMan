@@ -4,7 +4,7 @@ yarMan
 Mandiant IOCe to Yara rule converter
 Created by Morad Rawashdeh, May 2021, Version 1.0
 
-Usage: ioc_yara_converter.py [-h] [-i INPUT_FILE] [-d DIRECTORY]
+Usage: yarMan.py [-h] [-i INPUT_FILE] [-d DIRECTORY]
 
 optional arguments:
   -h, --help     show this help message and exit
