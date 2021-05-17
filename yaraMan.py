@@ -41,6 +41,13 @@ if args.directory:
     if not os.path.exists("{}{}Converted_Yara".format(args.directory,path_char)):
         os.mkdir("{}{}Converted_Yara".format(args.directory,path_char))
 
+print("---------------------------------------------------------")
+print("")
+print("                     yaraMan \n")
+print("        Mandiant IOCe to Yara rule converter \n")
+print("    Created by Morad Rawashdeh, May 2021, Version 1.0")
+print("")
+print("---------------------------------------------------------\n")
 
 def run_script(file_name):
     ioc_file = file_name
@@ -83,17 +90,17 @@ def run_script(file_name):
                 desc = desc.replace("\\","\\\\")
                 desc = desc.replace("\"","")
             # Get any line contains operator
-            if "operator" in l:
+            if "operator=\"" in l:
                 operator_value = l[l.find("operator=\"") + 10:l.find("\"",l.find("operator=\"") + 10)]  # get the text inside quotations from operator section ((operator=""))
                 operator_value = operator_value.lower()
                 condition += "("
             # Get any line contains Context
-            if "Context" in l:
+            if "<Context" in l:
                 search_value = l[l.find("search=\"") + 8:l.find("\"",l.find("search=\"") + 8)]  # get the text inside quotations from search section ((search=""))
                 search_value = search_value.split("/")
                 search_value = search_value[-1] # get the last element from the array
                 l_next = datafile[i + 1]    # Go to the next line and get the value of content section
-                if "Content" in l_next:
+                if "<Content" in l_next:
                     content_value = l_next[l_next.find("\">") + 2:l_next.find("</",l_next.find("\">") + 2)]  # get the text inside content section ((<Content></Content>))
                     content_value = content_value.replace("\\","\\\\")
                     if "date" in l_next: # remove letter T and Z from date format
@@ -150,13 +157,11 @@ def run_script(file_name):
         f.write("\t\t{}\n".format(l))
     f.write("}")
 
-    
-
-
     print("")
-    print("IOC file name is :\t{}\n".format(ioc_file))
-    print("Rule name is :\t\t{}\n".format(rule_name))
+    print("IOC file name :\t\t{}\n".format(ioc_file))
+    print("Rule name :\t\t{}\n".format(rule_name))
     print("")
+
 
 if args.input_file: # if options -i is provided
     rules_count = 1
@@ -176,12 +181,6 @@ if args.directory: # if options -d is provided
         rules_count+=1
 
 # print output on console
-print("")
-print("---------------------------------------------------------")
-print("")
-print("yaraMan \n")
-print("Mandiant IOCe to Yara rule converter \n")
-print("Created by Morad Rawashdeh, May 2021, Version 1.0")
 print("")
 print("---------------------------------------------------------")
 print("")
