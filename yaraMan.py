@@ -77,7 +77,7 @@ def run_script(file_name):
                 rule_name = rule_name.replace("-","_")
                 rule_name = rule_name.replace("(","")
                 rule_name = rule_name.replace(")","")
-            # find <description> and make it meta description
+            # find <description> and make it meta description inside yara file
             if "<description>" in l: 
                 desc = l[l.find(">") + 1:l.find("</",l.find(">") + 1)]  # get the text inside quotations from operator section ((operator=""))
                 desc = desc.replace("\\","\\\\")
@@ -120,7 +120,13 @@ def run_script(file_name):
                 else:
                     operator_value = "or"
                 condition = condition + ") {} ".format(operator_value)
-    condition = condition[:-4] # remove last operator from condition
+    # remove last operator from condition
+    condition = condition[:-4] 
+
+    # delete first "(" and last ")" parantheses
+    condition = condition.strip()
+    condition = condition[1:-1]
+
     # colse opened file
     f.close()
 
@@ -143,6 +149,9 @@ def run_script(file_name):
     for l in condition.splitlines():
         f.write("\t\t{}\n".format(l))
     f.write("}")
+
+    
+
 
     print("")
     print("IOC file name is :\t{}\n".format(ioc_file))
@@ -170,7 +179,7 @@ if args.directory: # if options -d is provided
 print("")
 print("---------------------------------------------------------")
 print("")
-print("IOC_YARA_CONVERTER \n")
+print("yaraMan \n")
 print("Mandiant IOCe to Yara rule converter \n")
 print("Created by Morad Rawashdeh, May 2021, Version 1.0")
 print("")
