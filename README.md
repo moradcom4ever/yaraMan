@@ -1,10 +1,10 @@
-# yarMan
+# yaraMan
 
-yarMan
+yaraMan
 Mandiant IOCe to Yara rule converter
 Created by Morad Rawashdeh, May 2021, Version 1.0
 
-Usage: yarMan.py [-h] [-i INPUT_FILE] [-d DIRECTORY]
+Usage: yaraMan.py [-h] [-i INPUT_FILE] [-d DIRECTORY]
 
 optional arguments:
   -h, --help     show this help message and exit
